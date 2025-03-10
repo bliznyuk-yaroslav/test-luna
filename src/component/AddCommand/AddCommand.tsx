@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import PokemonSelected from "../PokemonSelected/PokemonSelected";
+import { StarIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 import AddTeamModal from "../AddTeamModal/AddTeamModal";
 
 interface Pokemon {
@@ -54,9 +55,12 @@ const AddTeam: React.FC = () => {
       <h1 className="text-2xl font-bold mb-4">Додати команду</h1>
       <button
         onClick={() => setIsModalOpen(true)}
-        className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+        className=" h-8 border border-purple-800 text-purple-800 rounded-md px-3 flex items-center gap-2 
+             hover:bg-purple-50  active:bg-purple-200 disabled:opacity-50 disabled:cursor-not-allowed 
+             focus:ring-2 focus:ring-purple-200 transition-colors duration-200"
       >
-        Додати команду
+        <StarIcon className="w-5 h-5 " /> <span>Додати команду</span>
+        <ChevronDownIcon className="w-4 h-4" />
       </button>
 
       <div className="overflow-hidden rounded-lg border border-gray-700  mt-6">
@@ -69,29 +73,37 @@ const AddTeam: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {teamList.map((team, index) => (
-              <tr
-                key={index}
-                className={`border-b border-white-700 ${
-                  index % 2 === 1 ? "bg-gray-100" : ""
-                }`}
-              >
-                <td className="px-6 py-4 font-semibold">{team.teamName}</td>
-                <td className="px-6 py-4">{`${team.trainFirstName} ${team.trainLastName}`}</td>
-                <td className="px-6 py-4">
-                  <ul className="flex flex-wrap gap-2">
-                    {team.selectedPokemon.map((pokemon, i) => (
-                      <li
-                        key={i}
-                        className="py-1 px-3.5 rounded-3xl text-sm font-medium text-green-700 bg-green-100"
-                      >
-                        {pokemon.name}
-                      </li>
-                    ))}
-                  </ul>
+            {teamList.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="px-6 py-4 text-center text-gray-500">
+                  Немає команд. Додайте нову команду!
                 </td>
               </tr>
-            ))}
+            ) : (
+              teamList.map((team, index) => (
+                <tr
+                  key={index}
+                  className={`border-b border-white-700 ${
+                    index % 2 === 1 ? "bg-gray-100" : ""
+                  }`}
+                >
+                  <td className="px-6 py-4 font-semibold">{team.teamName}</td>
+                  <td className="px-6 py-4">{`${team.trainFirstName} ${team.trainLastName}`}</td>
+                  <td className="px-6 py-4">
+                    <ul className="flex flex-wrap gap-2">
+                      {team.selectedPokemon.map((pokemon, i) => (
+                        <li
+                          key={i}
+                          className=" flex items-center rounded-full px-3 py-1  text-sm font-medium text-green-900 bg-green-100"
+                        >
+                          {pokemon.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

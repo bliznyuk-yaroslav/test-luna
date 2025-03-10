@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { XMarkIcon } from "@heroicons/react/24/solid";
 
-interface Pokemon {
+export interface Pokemon {
   name: string;
   url: string;
 }
@@ -15,9 +16,9 @@ const PokemonSelect: React.FC<PokemonSelectedProps> = ({
   maxSelected = 4,
 }) => {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-  const [selectedPokemon, setSelectedPokemon] = useState<(Pokemon | null)[]>(
-    new Array(maxSelected).fill(null)
-  );
+  const [selectedPokemon, setSelectedPokemon] = useState<Pokemon[]>([]);
+  const [searchPokemon, setSearchPokemon] = useState("");
+  const [isFocus, setIsFocus] = useState(false);
 
   useEffect(() => {
     axios
@@ -33,41 +34,78 @@ const PokemonSelect: React.FC<PokemonSelectedProps> = ({
       });
   }, []);
 
-  const handleSelect = (index: number, pokemonName: string) => {
+  const handleSelect = (pokemonName: string) => {
+    if (selectedPokemon.length >= maxSelected) return;
     const pokemon = pokemonList.find((p) => p.name === pokemonName);
     if (!pokemon) return;
-    const updatedSelection = [...selectedPokemon];
-    updatedSelection[index] = pokemon;
-    setSelectedPokemon(updatedSelection);
-    onSelect(updatedSelection.filter((p) => p !== null) as Pokemon[]);
+
+    setSelectedPokemon((prev) => {
+      const updated = [...prev, pokemon];
+      onSelect(updated);
+      return updated;
+    });
+
+    setIsFocus(false);
   };
 
+  const handleRemove = (index: number) => {
+    setSelectedPokemon((prev) => {
+      const update = prev.filter((_, i) => i !== index);
+      onSelect(update);
+      return update;
+    });
+  };
+  const filterPokemon = pokemonList.filter((p) =>
+    p.name.toLocaleLowerCase().includes(searchPokemon.toLocaleLowerCase())
+  );
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Вибери свою команду покемонів</h2>
-      <div className="flex flex-col gap-4">
-        {selectedPokemon.map((selected, index) => (
-          <select
+      <label className="block text-gray-700 text-sm font-bold mb-2">
+        Покемони <span className="text-gray-400">(макс {maxSelected})</span>
+      </label>
+
+      <div className="flex flex-wrap gap-2 border p-2 rounded">
+        {selectedPokemon.length < maxSelected && (
+          <input
+            type="text"
+            placeholder="Виберіть покемона..."
+            value={searchPokemon}
+            onChange={(e) => setSearchPokemon(e.target.value)}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setTimeout(() => setIsFocus(false), 200)}
+            className="flex-1 p-1 focus:outline-none"
+            list="pokemon-options"
+          />
+        )}
+        {selectedPokemon.map((pokemon, index) => (
+          <div
             key={index}
-            className="p-2 border rounded"
-            value={selected?.name || ""}
-            onChange={(e) => handleSelect(index, e.target.value)}
+            className="flex items-center bg-gray-200 px-3 py-1 rounded-full text-sm"
           >
-            <option value="">Виберіть покемона</option>
-            {pokemonList
-              .filter(
-                (p) =>
-                  !selectedPokemon.some((sp) => sp?.name === p.name) ||
-                  selected?.name === p.name
-              )
-              .map((pokemon) => (
-                <option key={pokemon.name} value={pokemon.name}>
-                  {pokemon.name}
-                </option>
-              ))}
-          </select>
+            {pokemon.name}
+            <button
+              className="ml-2 text-gray-500 hover:text-red-500"
+              onClick={() => handleRemove(index)}
+            >
+              <XMarkIcon className="h-6 w-6 text-black " />
+            </button>
+          </div>
         ))}
       </div>
+
+      {isFocus && (
+        <ul className="border rounded mt-1 max-h-40 overflow-auto bg-white">
+          {(searchPokemon ? filterPokemon : pokemonList).map((pokemon) => (
+            <li
+              key={pokemon.name}
+              className="p-2 hover:bg-gray-100 cursor-pointer"
+              onClick={() => handleSelect(pokemon.name)}
+            >
+              {pokemon.name}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
