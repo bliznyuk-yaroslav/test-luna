@@ -14,13 +14,8 @@ interface AddTeamModalProps {
     trainLastName: string,
     selectedPokemon: Pokemon[]
   ) => void;
-  size?: "default" | "small";
 }
-const AddTeamModal: React.FC<AddTeamModalProps> = ({
-  onClose,
-  onAddTeam,
-  size,
-}) => {
+const AddTeamModal: React.FC<AddTeamModalProps> = ({ onClose, onAddTeam }) => {
   const [teamName, setTeamName] = useState<string>("");
   const [trainFirstName, setTrainFirstName] = useState<string>("");
   const [trainLastName, setTrainLastName] = useState<string>("");
@@ -30,7 +25,6 @@ const AddTeamModal: React.FC<AddTeamModalProps> = ({
     trainFirstName: "",
     trainLastName: "",
   });
-  const modalSizeClass = size === "small" ? "w-1/4" : "w-1/3";
   const handleSelectPokemon = (selectedPokemon: Pokemon[]) => {
     setSelectedPokemon(selectedPokemon);
   };
@@ -73,7 +67,7 @@ const AddTeamModal: React.FC<AddTeamModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-500  bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-gray-500  bg-opacity-100 flex justify-center items-center">
       <div
         className="bg-white p-6 rounded-lg w-1/3 relative"
         onClick={(e) => e.stopPropagation()}
@@ -86,7 +80,7 @@ const AddTeamModal: React.FC<AddTeamModalProps> = ({
               placeholder="Ім'я команди"
               value={teamName}
               onChange={(e) => handleInputValid(e, "teamName", setTeamName)}
-              className="p-2 border border-gray-300 rounded-lg w-170 "
+              className="p-2 border border-gray-300 rounded-lg w-full mb-4"
             />
             {error.teamName && (
               <p className="text-red-500 text-sm">{error.teamName}</p>
@@ -100,7 +94,7 @@ const AddTeamModal: React.FC<AddTeamModalProps> = ({
               onChange={(e) =>
                 handleInputValid(e, "trainFirstName", setTrainFirstName)
               }
-              className="p-2 border border-gray-300 rounded-lg w-80 "
+              className="p-2 border border-gray-300 rounded-lg w-full mb-1"
             />
             {error.teamName && (
               <p className="text-red-500 text-sm">{error.trainFirstName}</p>
@@ -114,7 +108,7 @@ const AddTeamModal: React.FC<AddTeamModalProps> = ({
               onChange={(e) =>
                 handleInputValid(e, "trainLastName", setTrainLastName)
               }
-              className="p-2 border border-gray-300 rounded-lg w-80 "
+              className="p-2 border border-gray-300 rounded-lg w-full mb-4"
             />
             {error.teamName && (
               <p className="text-red-500 text-sm">{error.trainLastName}</p>
@@ -127,9 +121,9 @@ const AddTeamModal: React.FC<AddTeamModalProps> = ({
         <div className="mt-4 flex justify-between">
           <button
             onClick={handleSubmit}
-            className={`border border-purple-800 text-purple-800 rounded-md px-3 flex items-center gap-2 
+            className="h-8 border border-purple-800 text-purple-800 rounded-md px-3 flex items-center gap-2 
              hover:bg-purple-50  active:bg-purple-200 disabled:opacity-50 disabled:cursor-not-allowed 
-             focus:ring-2 focus:ring-purple-200 transition-colors duration-200 ${modalSizeClass}`}
+             focus:ring-2 focus:ring-purple-200 transition-colors duration-200"
           >
             Додати команду
           </button>
